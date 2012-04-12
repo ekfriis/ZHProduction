@@ -2,10 +2,10 @@
 # using: 
 # Revision: 1.303.2.7 
 # Source: /cvs/CMSSW/CMSSW/Configuration/PyReleaseValidation/python/ConfigBuilder.py,v 
-# with command line options: Configuration/Generator/python/PYTHIA6_Tauola_SM_H_2Tau_zh_mH125_7TeV_cff.py -s GEN --conditions START42_V14B::All --eventcontent FEVT --datatier GEN-SIM-RAW --pileup NoPileUp -n 10 --no_exec
+# with command line options: Configuration/Generator/python/PYTHIA6_Tauola_SM_H_2W_2lnu_zh_mH150_7TeV_cff.py -s GEN,SIM --conditions START42_V14B::All --eventcontent FEVT --datatier GEN-SIM-RAW --pileup NoPileUp -n 10 --no_exec
 import FWCore.ParameterSet.Config as cms
 
-process = cms.Process('GEN')
+process = cms.Process('SIM')
 
 # import of standard configurations
 process.load('Configuration.StandardSequences.Services_cff')
@@ -18,6 +18,7 @@ process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration.StandardSequences.Generator_cff')
 process.load('IOMC.EventVertexGenerators.VtxSmearedRealistic7TeV2011Collision_cfi')
 process.load('GeneratorInterface.Core.genFilterSummary_cff')
+process.load('Configuration.StandardSequences.SimIdeal_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 
@@ -35,7 +36,7 @@ process.options = cms.untracked.PSet(
 # Production Info
 process.configurationMetadata = cms.untracked.PSet(
     version = cms.untracked.string('$Revision: 1.0 $'),
-    annotation = cms.untracked.string('PYTHIA6 WH, H->WW->lnulnu mH=125 with TAUOLA at 7TeV'),
+    annotation = cms.untracked.string('PYTHIA6 WH, H->WW->lnulnu mH=150 with TAUOLA at 7TeV'),
     name = cms.untracked.string('$Source: Higgs request$')
 )
 
@@ -45,7 +46,7 @@ process.FEVToutput = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
     eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
     outputCommands = process.FEVTEventContent.outputCommands,
-    fileName = cms.untracked.string('PYTHIA6_Tauola_SM_H_2Tau_zh_mH125_7TeV_cff_py_GEN.root'),
+    fileName = cms.untracked.string('PYTHIA6_Tauola_SM_H_2W_2lnu_zh_mH150_7TeV_cff_py_GEN_SIM.root'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
         dataTier = cms.untracked.string('GEN-SIM-RAW')
@@ -100,7 +101,7 @@ process.generator = cms.EDFilter("Pythia6GeneratorFilter",
             'PARP(93)=10.0  ! primordial kT-max', 
             'MSTP(81)=21    ! multiple parton interactions 1 is Pythia default', 
             'MSTP(82)=4     ! Defines the multi-parton model'),
-        processParameters = cms.vstring('PMAS(25,1)=125       !mass of Higgs', 
+        processParameters = cms.vstring('PMAS(25,1)=150       !mass of Higgs', 
             'MSEL=0                  ! user selection for process', 
             'MSUB(102)=0             !ggH', 
             'MSUB(123)=0             !ZZ fusion to H', 
@@ -143,13 +144,13 @@ process.generator = cms.EDFilter("Pythia6GeneratorFilter",
             'MDME(217,1)=0           !Higgs decay into Higgs decay', 
             'MDME(218,1)=0           !Higgs decay into e nu e', 
             'MDME(219,1)=0           !Higgs decay into mu nu mu', 
-            'MDME(220,1)=1           !Higgs decay into tau nu tau', 
+            'MDME(220,1)=0           !Higgs decay into tau nu tau', 
             'MDME(221,1)=0           !Higgs decay into Higgs decay', 
             'MDME(222,1)=0           !Higgs decay into g g', 
             'MDME(223,1)=0           !Higgs decay into gam gam', 
             'MDME(224,1)=0           !Higgs decay into gam Z', 
             'MDME(225,1)=0           !Higgs decay into Z Z', 
-            'MDME(226,1)=0           !Higgs decay into W W'),
+            'MDME(226,1)=1           !Higgs decay into W W'),
         parameterSets = cms.vstring('pythiaUESettings', 
             'processParameters')
     )
@@ -160,12 +161,13 @@ process.ProductionFilterSequence = cms.Sequence(process.generator)
 
 # Path and EndPath definitions
 process.generation_step = cms.Path(process.pgen)
+process.simulation_step = cms.Path(process.psim)
 process.genfiltersummary_step = cms.EndPath(process.genFilterSummary)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.FEVToutput_step = cms.EndPath(process.FEVToutput)
 
 # Schedule definition
-process.schedule = cms.Schedule(process.generation_step,process.genfiltersummary_step,process.endjob_step,process.FEVToutput_step)
+process.schedule = cms.Schedule(process.generation_step,process.genfiltersummary_step,process.simulation_step,process.endjob_step,process.FEVToutput_step)
 # filter all path with the production filter sequence
 for path in process.paths:
 	getattr(process,path)._seq = process.ProductionFilterSequence * getattr(process,path)._seq 
