@@ -2,7 +2,7 @@
 # using: 
 # Revision: 1.303.2.7 
 # Source: /cvs/CMSSW/CMSSW/Configuration/PyReleaseValidation/python/ConfigBuilder.py,v 
-# with command line options: Configuration/Generator/python/PYTHIA6_Tauola_SM_H_2W_2lnu_zh_mH145_7TeV_cff.py -s GEN,SIM --conditions START42_V14B::All --eventcontent FEVTSIM --datatier GEN-SIM-RAW --pileup NoPileUp -n 10 --no_exec
+# with command line options: Configuration/Generator/python/PYTHIA6_Tauola_SM_H_2W_2lnu_zh_mH145_7TeV_cff.py -s GEN,SIM --conditions START42_V14B::All --eventcontent RAWSIM --datatier GEN-SIM-RAW --pileup NoPileUp -n 10 --no_exec
 import FWCore.ParameterSet.Config as cms
 
 process = cms.Process('SIM')
@@ -42,10 +42,10 @@ process.configurationMetadata = cms.untracked.PSet(
 
 # Output definition
 
-process.FEVTSIMoutput = cms.OutputModule("PoolOutputModule",
+process.RAWSIMoutput = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
     eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
-    outputCommands = process.FEVTSIMEventContent.outputCommands,
+    outputCommands = process.RAWSIMEventContent.outputCommands,
     fileName = cms.untracked.string('PYTHIA6_Tauola_SM_H_2W_2lnu_zh_mH145_7TeV_cff_py_GEN_SIM.root'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
@@ -164,10 +164,10 @@ process.generation_step = cms.Path(process.pgen)
 process.simulation_step = cms.Path(process.psim)
 process.genfiltersummary_step = cms.EndPath(process.genFilterSummary)
 process.endjob_step = cms.EndPath(process.endOfProcess)
-process.FEVTSIMoutput_step = cms.EndPath(process.FEVTSIMoutput)
+process.RAWSIMoutput_step = cms.EndPath(process.RAWSIMoutput)
 
 # Schedule definition
-process.schedule = cms.Schedule(process.generation_step,process.genfiltersummary_step,process.simulation_step,process.endjob_step,process.FEVTSIMoutput_step)
+process.schedule = cms.Schedule(process.generation_step,process.genfiltersummary_step,process.simulation_step,process.endjob_step,process.RAWSIMoutput_step)
 # filter all path with the production filter sequence
 for path in process.paths:
 	getattr(process,path)._seq = process.ProductionFilterSequence * getattr(process,path)._seq 
