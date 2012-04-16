@@ -17,8 +17,7 @@ step 1: create gen fragment (CMSSW_4_2_8_patch4)
 cvs co -r CMSSW_4_2_8_patch4 Configuration/Generator
 cp your_card_file.py Configuration/Generator
 scram b
-cmsDriver.py your_card_file.py -s GEN --conditions START42_V14B::All
-----eventcontent FEVT --datatier GEN-SIM-RAW --pileup NoPileUp -n 10 --no_exec
+cmsDriver.py your_card_file.py -s GEN --conditions START42_V14B::All --eventcontent FEVTSIM --datatier GEN-SIM-RAW --pileup NoPileUp -n 10 --no_exec
 
 You then setup crab with the appropriate config as input... random number seeds
 and such are taken care of automatically if you don't specify anything:
